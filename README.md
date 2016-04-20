@@ -91,3 +91,63 @@ $ rails generate devise:install
 ```shell
 $ rails generate devise User
 ```
+
+...and then :S!
+
+take a look at your migration and fix the id column with the code below
+
+```ruby
+1 class DeviseCreateUsers < ActiveRecord::Migration
+2   def change
+3     create_table :users, id: :uuid do |t|
+4     ...
+```
+
+At this point theres no magic! but... we have to take a hard decision: how will our application works with users and tenants?
+
+    A) Does our app support multiple tenants for one user?
+    B) Or does our app just permit one user belongs to a single tenant?
+
+if your answer is B you just need to add a reference column in the User model, something like this:
+
+```ruby
+class Tenant < ActiveRecord::Base
+  has_many :users
+  ...
+```
+
+The migration:
+
+```shell
+$ rails g migration add_tenant_to_users tenant:references
+```
+
+but...
+
+#Oh lord, if things were so easy! :P
+
+Remember, you have to fix your migration before running it.
+
+```ruby
+  def change
+    add_reference :users, :tenant, foreign_key: true, type: :uuid
+  end
+```
+
+But if your answer were A, you rock, you really want to live on the edge.
+
+Ok, let's get back to the point, First we need to keep in mind some things about application behaviour.
+
+1. As a mortal user, Am I able to signup in the app?
+2. As an admin user, I have the ability to setup my users accounts.
+3. When I want to suspend or remove user, Should I delete from DB or use soft delete instead?
+
+###Some examples of multitenancy apps:
+
+- Atlassian.
+  something.atlassian.com/projects/324567
+- Basecamp.
+  basecamp.com/21345AD/projects/45674567
+- Slack.
+  myorganisation.slack.com
+
