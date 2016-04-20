@@ -201,7 +201,29 @@ Rails.application.routes.draw do
   constraints(TenantHandler::SubdomainPresent) do
     root 'application#tenant'
   end
-
 end
 ```
 
+### Finding Tenant by subdomain
+
+```ruby
+  # application_controller.rb
+
+  before_action :mount_tenant
+
+  attr_accessor :current_tenant
+  helper_method :current_tenant
+  helper_method :subdomain?
+
+  def mount_tenant
+    @current_tenant = if subdomain? && @current_tenant.nil?
+      Tenant.find_by(subdomain: request.subdomain)
+    else
+      nil
+    end
+  end
+
+  def subdomain?
+    request.subdomain.present? && !request.subdomain.include?('www')
+  end
+```
