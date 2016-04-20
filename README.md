@@ -48,3 +48,46 @@ Let's create our tenant model
 ```ruby
 rails g model Tenant name subdomain status:integer
 ```
+
+Please take a look at your migration, it will look like this:
+
+```ruby
+class CreateTenants < ActiveRecord::Migration
+  def change
+    create_table :tenants, id: :uuid do |t|
+      t.string :name
+      t.string :subdomain
+      t.integer :status
+
+      t.timestamps null: false
+    end
+  end
+end
+```
+
+###Our old friend [Devise](https://github.com/plataformatec/devise) (we love and hate him)
+
+```ruby
+# Gemfile
+gem 'devise'
+```
+
+...and then:
+
+```shell
+$ bundle install
+```
+
+...and then:
+
+
+```shell
+$ rails generate devise:install
+```
+
+...and then:
+
+
+```shell
+$ rails generate devise User
+```
