@@ -142,6 +142,8 @@ Ok, let's get back to the point, First we need to keep in mind some things about
 2. As an admin user, I have the ability to setup my users accounts.
 3. When I want to suspend or remove user, Should I delete from DB or use soft delete instead?
 
+
+
 ###Some examples of multitenancy apps:
 
 - Atlassian.
@@ -151,3 +153,45 @@ Ok, let's get back to the point, First we need to keep in mind some things about
 - Slack.
   myorganisation.slack.com
 
+
+
+##The routes
+
+A great way to take advantage of raoute constraints
+
+[The rails route mapper source code (+2k LOC)](https://github.com/rails/rails/blob/52ce6ece8c8f74064bb64e0a0b1ddd83092718e1/actionpack/lib/action_dispatch/routing/mapper.rb) TLDR;
+
+```ruby
+# lib/tenant_handler.rb
+
+module TenantHandler
+  class SubdomainPresent
+    def self.matches?(request)
+      request.subdomain.present? && !["www", "api"].include?(request.subdomain)
+    end
+  end
+
+  class SubdomainBlank
+    def self.matches?(request)
+      request.subdomain.blank? || request.subdomain == 'www'
+    end
+  end
+end
+```
+
+```ruby
+# config/routes.rb
+require 'tenant_handler'
+
+Rails.application.routes.draw do
+
+  # ...some code
+
+  constraints(TenantHandler::SubdomainBlank) do
+    resources :shops, only: [:new, :create]
+    get "start", to: 'shops#new'
+
+    root 'pages#index' # this is your pretty fancy landing
+  end
+end
+```
