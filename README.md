@@ -157,6 +157,10 @@ Ok, let's get back to the point, First we need to keep in mind some things about
 
 ##The routes
 
+###The big question: Subdomain or scope?
+
+Please consider using prax (for linux) or pow (macos).
+
 A great way to take advantage of raoute constraints
 
 [The rails route mapper source code (+2k LOC)](https://github.com/rails/rails/blob/52ce6ece8c8f74064bb64e0a0b1ddd83092718e1/actionpack/lib/action_dispatch/routing/mapper.rb) TLDR;
@@ -195,3 +199,4 @@ Rails.application.routes.draw do
   end
 end
 ```
+
