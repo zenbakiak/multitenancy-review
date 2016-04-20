@@ -227,3 +227,38 @@ end
     request.subdomain.present? && !request.subdomain.include?('www')
   end
 ```
+
+A little bit hackish step.
+
+Devise routes:
+
+```ruby
+  devise_for :users, path: 'auth', controllers: {
+    registrations: 'auth/registrations',
+    sessions: 'auth/sessions',
+    passwords: 'auth/passwords',
+    confirmations: 'auth/confirmations'
+  }
+```
+
+Moving all your devise controllers to auth namespace ;)
+
+```ruby
+
+class Auth::SessionsController < Devise::SessionsController
+  def create
+    # Super will allow you to pass the authentication and let you execute your code.
+    super do |user|
+      sign_out(:user) unless user.active?
+
+      tenant = user.members && user.members.first.tenant
+      if tenant
+        redirect_to root_url(subdomain: tenant.subdomain) and return
+      else
+        sign_out(:user)
+      end
+    end
+  end
+end
+
+```
