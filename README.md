@@ -1,23 +1,50 @@
-# Multitenancy subdomain
+#Multitenancy with Rails 2016 review.
 
-# Getting started
 
-This application assumes you have at least Ruby, Postgres and other dependencies to run. 
-If that is not the case you can use [kaishi] to install everything you need.
+##The setup
 
-[kaishi]: https://github.com/IcaliaLabs/kaishi
+- Create new app.
 
-After setting up you can start using the application:
+- Create migration that enable postgres uuid migration.
 
-  % rails server
+###UUID?
 
-Or if you feel like using Foreman (comes with kaishi):
+_**U**niversally **U**nique **ID**entifier_
 
-  % foreman start
+Is a 16 bytes number (128 bits). So, posibilities of UUID are around 16^32 like 3,4 × 10^38. In its canonical form, a UUID is represented by 32 lowercase hexadecimal digits, displayed in five groups separated by hyphens, in the form 8-4-4-4-12 for a total of 36 characters (32 alphanumeric characters and four hyphens). For example:
 
-## Icalia Guides
+```
+550e8400-e29b-41d4-a716-446655440000
+```
 
-Remember you can always rely on the Icalia Guides to a better development and
-internal progamming style:
+```
+The Regexp:
+/[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}/
+```
 
-* [Rails Guides](https://github.com/IcaliaLabs/icalia_guides/tree/master/rails)
+```ruby
+> SecureRandom.uuid
+=> "03c0fc41-c144-4366-b5a3-8ac5aede4be5"
+```
+
+Take a look at this article: [Decentralise id generation](http://andrzejonsoftware.blogspot.mx/2013/12/decentralise-id-generation.html)
+
+```shell
+$ rails g migration enable_uuid_extension
+```
+
+```ruby
+class EnableUuidExtension < ActiveRecord::Migration
+  def change
+    enable_extension 'uuid-ossp'
+  end
+end
+```
+
+Creating a basic multitenancy application
+
+Let's create our tenant model
+
+```ruby
+rails g model Tenant name subdomain status:integer
+```
