@@ -262,3 +262,15 @@ class Auth::SessionsController < Devise::SessionsController
 end
 
 ```
+
+
+If you want to work with uuid's
+
+routes:
+```ruby
+
+  scope ':tenant', as: :tenant do
+    get '/', to: 'application#tenant'
+  end
+```
+

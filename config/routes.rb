@@ -13,4 +13,9 @@ Rails.application.routes.draw do
     root 'application#tenant'
   end
 
+
+  scope ':tenant_uuid', as: :tenant_uuid do
+    get '/', to: 'application#tenant'
+  end
+
 end
