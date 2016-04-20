@@ -46,6 +46,8 @@ module MultitenancySubdomain
       g.stylesheets false
       g.javascripts false
       g.helper false
+
+      g.orm :active_record, primary_key_type: :uuid
     end
 
     config.autoload_paths += %W(#{config.root}/lib)
