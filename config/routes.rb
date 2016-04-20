@@ -1,7 +1,7 @@
 require 'tenant_handler'
 
 Rails.application.routes.draw do
-  get 'pages/index'
+  resources :pages
 
   devise_for :users
 
@@ -12,6 +12,5 @@ Rails.application.routes.draw do
   constraints(TenantHandler::SubdomainPresent) do
     root 'application#tenant'
   end
-
 
 end

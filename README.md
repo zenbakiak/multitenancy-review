@@ -190,13 +190,18 @@ require 'tenant_handler'
 Rails.application.routes.draw do
 
   # ...some code
+  resources :pages
+
+  devise_for :users
 
   constraints(TenantHandler::SubdomainBlank) do
-    resources :shops, only: [:new, :create]
-    get "start", to: 'shops#new'
-
-    root 'pages#index' # this is your pretty fancy landing
+    get '/', to: 'pages#index'
   end
+
+  constraints(TenantHandler::SubdomainPresent) do
+    root 'application#tenant'
+  end
+
 end
 ```
 
